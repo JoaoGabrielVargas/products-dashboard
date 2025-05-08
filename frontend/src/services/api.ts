@@ -1,10 +1,14 @@
-import { NewProduct, SalesReportResponse, UploadProductsCSVResponse, UploadOptions } from "@/interfaces/Interfaces";
+import { NewProduct, SalesReportResponse, UploadProductsCSVResponse, UploadOptions, Product } from "@/interfaces/Interfaces";
 
-export async function getSalesReport(): Promise<SalesReportResponse> {
-    const res = await fetch('http://localhost:8080/sales-report');
-    if (!res.ok) throw new Error('Failed to fetch data');
-    return res.json();
-  }
+export async function getSalesReport(categoryId?: string): Promise<SalesReportResponse> {
+  const url = categoryId 
+      ? `http://localhost:8080/sales-report?category_id=${categoryId}`
+      : 'http://localhost:8080/sales-report';
+  
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch data');
+  return res.json();
+}
 
   export async function getCategories() {
     const res = await fetch('http://localhost:8080/categories');
@@ -41,3 +45,27 @@ export async function getSalesReport(): Promise<SalesReportResponse> {
       throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   };
+
+  // services/api.ts
+export async function updateProduct(
+  productId: number, 
+  data: { price: number; total_sold: number }
+): Promise<{ 
+  message: string;
+  product: Product;
+}> {
+  const response = await fetch(`http://localhost:8080/products/${productId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to update product');
+  }
+
+  return response.json();
+}

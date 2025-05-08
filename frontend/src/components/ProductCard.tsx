@@ -6,11 +6,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ProductProps } from "@/interfaces/Interfaces"
 
-export default function ProductCard({ product }: ProductProps) {
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import { ProductProps, Product } from "@/interfaces/Interfaces"
+import { EditProductForm } from "./EditProductForm"
+
+export default function ProductCard({ product, onUpdate }: ProductProps) {
+  const handleProductUpdated = (updatedProduct: Product) => {
+    onUpdate?.(updatedProduct) // Propaga a atualização para o componente pai
+  }
   return (
-    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow duration-300 border border-gray-200 rounded-lg overflow-hidden !p-0">
+    <Dialog>
+      <DialogTrigger asChild>
+
+      
+    <Card className="w-full max-w-sm hover:shadow-lg transition-shadow duration-300 border border-gray-200 rounded-lg overflow-hidden !p-0 cursor-pointer">
       <CardHeader className="bg-gradient-to-r from-blue-50 to-gray-50 p-6 border-b border-gray-200 rounded-t-lg">
         <CardTitle className="text-xl font-semibold text-gray-800 truncate">
           {product.name}
@@ -52,5 +70,14 @@ export default function ProductCard({ product }: ProductProps) {
         </div>
       </CardFooter>
     </Card>
+    </DialogTrigger>
+    <DialogContent className="sm:max-w-[425px] bg-white rounded-lg border border-gray-200">
+      <DialogHeader className="bg-gradient-to-r from-blue-50 to-gray-50 p-6 border-b border-gray-200 rounded-t-lg">
+        <DialogTitle className="text-lg font-semibold text-gray-800">{product.name}</DialogTitle>
+        <DialogDescription className="text-gray-600">{product.description}</DialogDescription>
+      </DialogHeader>
+      <EditProductForm product={product} onSubmit={handleProductUpdated}/>
+    </DialogContent>
+    </Dialog>
   )
 }

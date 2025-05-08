@@ -1,10 +1,10 @@
 'use client'
 
 import { ChartContainer, type ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import {Bar, BarChart, CartesianGrid, XAxis, YAxis, LineChart, Line, ResponsiveContainer, Legend} from 'recharts';
+import {Bar, BarChart, CartesianGrid, XAxis, YAxis, LineChart, Line, ResponsiveContainer} from 'recharts';
 import { useEffect, useState } from "react";
 import { getSalesReport, getCategories } from "@/services/api";
-import { Meta, MonthlySaleData, SalesReportResponse } from "@/interfaces/Interfaces";
+import { Meta, MonthlySaleData, SalesReportResponse, Category } from "@/interfaces/Interfaces";
 import { groupSalesByMonth } from "@/utils/salesDataProcessor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -23,16 +23,16 @@ const chartConfig = {
 
 export default function Home() {
   const [sales, setSales] = useState<MonthlySaleData[]>([])
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [meta, setMeta] = useState<Meta>()
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null) 
 
-  const getSalesData = async () => {
+  const getSalesData = async (categoryId = 'all') => {
     try {
       setLoading(true)
-      const salesReportData = await getSalesReport() as SalesReportResponse
+      const salesReportData = await getSalesReport(categoryId === 'all' ? undefined : categoryId) as SalesReportResponse
       console.log("salesReportData 1", salesReportData)
       const monthlySales = groupSalesByMonth(salesReportData.sales)
       setSales(monthlySales)
@@ -55,9 +55,9 @@ export default function Home() {
   }
 
   useEffect(() => {
+    getSalesData(selectedCategory)
     fetchCategories()
-    getSalesData()
-  }, [])
+  }, [selectedCategory])
 
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value)
@@ -74,6 +74,11 @@ export default function Home() {
 
       
       <h1 className="text-2xl font-bold mb-6">Sales Dashboard</h1>
+      {selectedCategory !== 'all' && (
+            <p className="text-sm text-gray-600 mt-1">
+              Showing data for: {categories.find(c => String(c.id) === selectedCategory)?.name || 'selected category'}
+            </p>
+          )}
       <div className="flex items-center gap-4">
         <span>Filter by product category: </span>
       <Select value={selectedCategory} onValueChange={handleCategoryChange}>
@@ -97,7 +102,7 @@ export default function Home() {
           ">
             <SelectItem value="all">All Categories</SelectItem>
             {categories.map(category => (
-              <SelectItem key={category.id} value={category.id}>
+              <SelectItem key={category.id} value={String(category.id)}>
                 {category.name}
               </SelectItem>
             ))}
@@ -148,7 +153,11 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-14">
         <div className="bg-white rounded-lg shadow p-4 h-[400px]">
-          <h2 className="text-lg font-semibold mb-4">Monthly Sales Volume</h2>
+        <h2 className="text-lg font-semibold mb-4">
+            {selectedCategory === 'all' 
+              ? 'Monthly Sales Volume' 
+              : `Monthly Sales - ${categories.find(c => String(c.id) === selectedCategory)?.name || ''}`}
+          </h2>
           <ChartContainer config={chartConfig} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={sales}>
@@ -179,7 +188,11 @@ export default function Home() {
           </ChartContainer>
         </div>
         <div className="bg-white rounded-lg shadow p-4 h-[400px]">
-          <h2 className="text-lg font-semibold mb-4">Monthly Profit</h2>
+        <h2 className="text-lg font-semibold mb-4">
+            {selectedCategory === 'all' 
+              ? 'Monthly Revenue' 
+              : `Monthly Revenue - ${categories.find(c => String(c.id) === selectedCategory)?.name || ''}`}
+          </h2>
           <ChartContainer config={chartConfig} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={sales}>
@@ -195,11 +208,11 @@ export default function Home() {
                   tick={{ fill: '#6b7280' }}
                   axisLine={false}
                   tickLine={false}
+                  tickMargin={10}
                 />
                 <ChartTooltip 
                   content={<ChartTooltipContent className="bg-white border border-gray-200 rounded shadow-lg p-2" />} 
                 />
-                <Legend />
                 <Line 
                   type="monotone" 
                   dataKey="total_price" 

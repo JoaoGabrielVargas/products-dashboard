@@ -10,6 +10,7 @@ export interface Product {
 
 export interface ProductProps {
   product: Product;
+  onUpdate: (updatedProduct: Product) => void 
 }
 
 export interface Sale {

@@ -28,6 +28,20 @@ export default function Products() {
     getProductsData()
   }, []);
 
+  const handleProductUpdate = async (updatedProduct: Product) => {
+    try {
+      // Atualiza a lista de produtos localmente
+      setProducts(prev => prev.map(p => 
+        p.id === updatedProduct.id ? updatedProduct : p
+      ))
+      
+      // Opcional: recarregar os dados do servidor
+      // await fetchProducts()
+    } catch (error) {
+      console.error("Failed to update product list:", error)
+    }
+  }
+
   if (loading) return (
     <div className="p-8">
       <div className="flex justify-between">
@@ -68,7 +82,7 @@ export default function Products() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products && products.map((product) => (
-          <ProductCard product={product} key={product.id} />
+          <ProductCard product={product} key={product.id} onUpdate={handleProductUpdate} />
         ))}
       </div>
     </div>
