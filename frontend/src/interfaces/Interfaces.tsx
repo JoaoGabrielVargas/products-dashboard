@@ -36,5 +36,5 @@ export interface NewProduct {
   name: string;
   description: string;
   price: number;
-  category: string;
+  category_id: string;
 }

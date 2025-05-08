@@ -44,7 +44,7 @@ export default function Products() {
         <h1 className="text-2xl font-bold mb-4">Products</h1>
 
       </div>
-      <p className="text-red-500">Erro: {error}</p>
+      <p className="text-red-500">Error: {error}</p>
     </div>
   )
 
@@ -63,7 +63,7 @@ export default function Products() {
     <div className="p-8">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold mb-4">Products</h1>
-        <AddProductButton />
+        <AddProductButton onProductAdded={getProductsData}/>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

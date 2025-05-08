@@ -174,16 +174,17 @@ def create_product():
                 "name": new_product.name,
                 "price": new_product.price,
                 "category": category.name
-            }
+            },
+            "status": "success"
         }), 201
 
     except ValueError as e:
         db.session.rollback()
-        return jsonify({"error": "Dados inválidos", "details": str(e)}), 400
+        return jsonify({"error": "Dados inválidos", "details": str(e), "status": "failed"}), 400
     except Exception as e:
         db.session.rollback()
         print("Erro completo:", str(e))  # Log detalhado
-        return jsonify({"error": "Erro ao criar produto"}), 500
+        return jsonify({"error": "Erro ao criar produto", "status": "failed"}), 500
     
 
 @app.route('/upload-csv', methods=['POST'])
