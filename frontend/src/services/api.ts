@@ -1,4 +1,4 @@
-import { NewProduct, SalesReportResponse } from "@/interfaces/Interfaces";
+import { NewProduct, SalesReportResponse, UploadProductsCSVResponse, UploadOptions } from "@/interfaces/Interfaces";
 
 export async function getSalesReport(): Promise<SalesReportResponse> {
     const res = await fetch('http://localhost:8080/sales-report');
@@ -19,3 +19,25 @@ export async function getSalesReport(): Promise<SalesReportResponse> {
     if (!res.ok) throw new Error('Failed to fetch data');
     return res.json();
   }
+
+  export const uploadProductsCSV = async (
+    formData: FormData,
+    options?: UploadOptions
+  ): Promise<UploadProductsCSVResponse> => {
+    console.log("options", options)
+    try {
+      const response = await fetch('http://localhost:8080/upload-csv', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
+    }
+  };

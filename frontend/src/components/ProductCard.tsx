@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductProps) {
         <p>Revenue: {product.revenue.toFixed(2)}</p>
       </CardContent>
       <CardFooter>
-        <p>Categoria: {product.category}</p>
+        <p>Category: {product.category}</p>
       </CardFooter>
     </Card>
   )

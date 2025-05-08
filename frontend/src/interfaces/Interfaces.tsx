@@ -38,3 +38,13 @@ export interface NewProduct {
   price: number;
   category_id: string;
 }
+
+export interface UploadProductsCSVResponse {
+  message: string;
+  count: number;
+  errors?: string[];
+}
+
+export interface UploadOptions {
+  onUploadProgress?: (progressEvent: ProgressEvent) => void;
+}
