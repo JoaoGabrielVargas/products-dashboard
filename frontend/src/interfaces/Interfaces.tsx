@@ -65,4 +65,7 @@ export interface MonthlySaleData {
   total_price: number;
   profit: number;
   salesCount: number;
+  isEditing?: boolean; // Novo campo para controle de edição
+  tempQuantity?: number; // Valor temporário durante edição
+  tempPrice?: number; // Valor temporário durante edição
 }

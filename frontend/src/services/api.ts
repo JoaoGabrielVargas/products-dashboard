@@ -69,3 +69,28 @@ export async function updateProduct(
 
   return response.json();
 }
+
+export async function updateMonthlySales(
+  monthKey: string,
+  data: { quantity: number; price: number }
+): Promise<{ 
+  message: string;
+  month: string;
+  quantity: number;
+  price: number;
+}> {
+  const response = await fetch(`http://localhost:8080/sales/monthly/${monthKey}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to update monthly sales');
+  }
+
+  return response.json();
+}

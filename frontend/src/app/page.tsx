@@ -3,11 +3,13 @@
 import { ChartContainer, type ChartConfig, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import {Bar, BarChart, CartesianGrid, XAxis, YAxis, LineChart, Line, ResponsiveContainer} from 'recharts';
 import { useEffect, useState } from "react";
-import { getSalesReport, getCategories } from "@/services/api";
+import { getSalesReport, getCategories, updateMonthlySales } from "@/services/api";
 import { Meta, MonthlySaleData, SalesReportResponse, Category } from "@/interfaces/Interfaces";
 import { groupSalesByMonth } from "@/utils/salesDataProcessor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { EditableCell } from "@/components/EditableCell";
 
 const chartConfig = {
   sales: {
@@ -63,6 +65,68 @@ export default function Home() {
     setSelectedCategory(value)
   }
 
+  const handleEditClick = (monthKey: string) => {
+    setSales(prev => prev.map(item => 
+      item.monthKey === monthKey 
+        ? { 
+            ...item, 
+            isEditing: true,
+            tempQuantity: item.quantity,
+            tempPrice: item.total_price / (item.quantity || 1) 
+          } 
+        : item
+    ))
+  }
+  
+  const handleSave = async (monthKey: string) => {
+    try {
+      const editedItem = sales.find(item => item.monthKey === monthKey)
+      if (!editedItem) return
+  
+      setLoading(true)
+      
+      // Aqui você precisará implementar a chamada API para atualizar os dados
+      await updateMonthlySales(monthKey, {
+        quantity: editedItem.tempQuantity!,
+        price: editedItem.tempPrice!
+      })
+  
+  
+      setSales(prev => prev.map(item => 
+        item.monthKey === monthKey && editedItem.tempQuantity && editedItem.tempPrice
+          ? { 
+              ...item, 
+              quantity: editedItem.tempQuantity,
+              total_price: editedItem.tempQuantity * editedItem.tempPrice,
+              profit: editedItem.tempQuantity * editedItem.tempPrice, 
+              isEditing: false 
+            }
+          : item
+      ))
+  
+    } catch (error) {
+      console.error("Failed to update monthly sales:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  const handleCancel = (monthKey: string) => {
+    setSales(prev => prev.map(item => 
+      item.monthKey === monthKey 
+        ? { ...item, isEditing: false } 
+        : item
+    ))
+  }
+  
+  const handleValueChange = (monthKey: string, field: 'tempQuantity' | 'tempPrice', value: number) => {
+    setSales(prev => prev.map(item => 
+      item.monthKey === monthKey 
+        ? { ...item, [field]: value } 
+        : item
+    ))
+  }
+
   if (loading) return <div className="flex items-center justify-center h-64">Loading sales data...</div>
   if (error) return <div className="flex items-center justify-center h-64 text-red-500">Error: {error}</div>
   if (!sales.length) return <div className="flex items-center justify-center h-64">No sales data available</div>
@@ -71,13 +135,11 @@ export default function Home() {
   return (
     <div className="p-4">
       <div className="p-4 flex justify-between">
-
-      
-      <h1 className="text-2xl font-bold mb-6">Sales Dashboard</h1>
-      {selectedCategory !== 'all' && (
-            <p className="text-sm text-gray-600 mt-1">
-              Showing data for: {categories.find(c => String(c.id) === selectedCategory)?.name || 'selected category'}
-            </p>
+        <h1 className="text-2xl font-bold mb-6">Sales Dashboard</h1>
+        {selectedCategory !== 'all' && (
+              <p className="text-sm text-gray-600 mt-1">
+                Showing data for: {categories.find(c => String(c.id) === selectedCategory)?.name || 'selected category'}
+              </p>
           )}
       <div className="flex items-center gap-4">
         <span>Filter by product category: </span>
@@ -227,6 +289,70 @@ export default function Home() {
           </ChartContainer>
         </div>
       </div>
+      <div className="bg-white rounded-lg shadow p-6">
+  <h2 className="text-lg font-semibold mb-4">Monthly Sales Data</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Revenue</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {sales.map((item) => (
+          <tr key={item.monthKey}>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.month}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {item.isEditing ? (
+                <EditableCell
+                  value={item.tempQuantity || 0}
+                  onSave={() => handleSave(item.monthKey)}
+                  onCancel={() => handleCancel(item.monthKey)}
+                  onChange={(value) => handleValueChange(item.monthKey, 'tempQuantity', value)}
+                  type="quantity"
+                />
+              ) : (
+                item.quantity
+              )}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {item.isEditing ? (
+                <EditableCell
+                  value={item.tempPrice || 0}
+                  onSave={() => handleSave(item.monthKey)}
+                  onCancel={() => handleCancel(item.monthKey)}
+                  onChange={(value) => handleValueChange(item.monthKey, 'tempPrice', value)}
+                  type="price"
+                />
+              ) : (
+                `U$ ${(item.total_price / (item.quantity || 1)).toFixed(2)}`
+              )}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              U$ {item.total_price.toFixed(2)}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {!item.isEditing && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEditClick(item.monthKey)}
+                  disabled={loading}
+                >
+                  Edit
+                </Button>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
     </div>
   );
 }
