@@ -29,8 +29,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="p-6">
-          <h1 className="text-4xl font-extrabold">SmartMart Solutions Dashboard</h1>
+        <div className="p-6 flex justify-between bg-blue-600">
+          <h1 className="text-4xl font-extrabold text-white">SmartMart Solutions System</h1>
           <Menu /> 
         </div>
         <main>

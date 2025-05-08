@@ -22,9 +22,17 @@ export interface Sale {
   unit_price: number;
 }
 
+export interface Meta {
+  generated_at: string;
+  total_products: number;
+  total_profit: number;
+  total_sales: number;
+}
+
 export interface SalesReportResponse {
-  sales: Sale[]
-  products: Product[] 
+  sales: Sale[];
+  products: Product[];
+  meta: Meta;
 }
 
 export interface Category {
@@ -47,4 +55,13 @@ export interface UploadProductsCSVResponse {
 
 export interface UploadOptions {
   onUploadProgress?: (progressEvent: ProgressEvent) => void;
+}
+
+export interface MonthlySaleData {
+  monthKey: string;
+  month: string;
+  quantity: number;
+  total_price: number;
+  profit: number;
+  salesCount: number;
 }

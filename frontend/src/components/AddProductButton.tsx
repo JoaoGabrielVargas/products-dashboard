@@ -121,23 +121,55 @@ export function AddProductButton({ onProductAdded }: AddProductButtonProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="bg-black text-white">Add New Product</Button>
+        <Button className="
+          bg-gradient-to-r from-blue-600 to-blue-500
+          text-white font-medium
+          shadow-md hover:shadow-lg
+          transition-all duration-200
+          hover:from-blue-700 hover:to-blue-600
+          px-6 py-3
+          rounded-lg
+          border border-blue-700/20
+        ">
+          + Add New Product
+        </Button>
       </PopoverTrigger>
-      <PopoverContent className="mr-8 bg-white">
-        <div className="grid gap-4">
+      <PopoverContent className="
+        w-72 p-0
+        rounded-lg
+        border border-gray-200
+        shadow-lg
+        overflow-hidden
+        bg-white
+      ">
+        <div className="grid gap-0 divide-y divide-gray-200">
           {error ? (
-            <p className="text-red-500">{error}</p>
+            <p className="p-4 text-red-500 text-sm">{error}</p>
           ) : (
             <>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Create new product form</Button>
+                  <Button 
+                    variant="ghost" 
+                    className="
+                      w-full
+                      justify-start
+                      rounded-none
+                      hover:bg-blue-50
+                      px-6 py-3
+                      text-gray-800
+                    "
+                  >
+                    <span className="text-sm font-medium">Create new product</span>
+                  </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] bg-white">
-                  <DialogHeader>
-                    <DialogTitle>Create New Product</DialogTitle>
-                    <DialogDescription>
-                      Add informations for the new product here.
+                <DialogContent className="sm:max-w-[425px] bg-white rounded-lg border border-gray-200">
+                  <DialogHeader className="bg-gradient-to-r from-blue-50 to-gray-50 p-6 border-b border-gray-200 rounded-t-lg">
+                    <DialogTitle className="text-lg font-semibold text-gray-800">
+                      Create New Product
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-600">
+                      Add information for the new product
                     </DialogDescription>
                   </DialogHeader>
                   <NewProductForm 
@@ -157,18 +189,31 @@ export function AddProductButton({ onProductAdded }: AddProductButtonProps) {
               />
 
               <Button 
-                variant="outline" 
+                variant="ghost"
                 onClick={handleCsvUploadClick}
                 disabled={csvUploading}
+                className="
+                  w-full
+                  justify-start
+                  rounded-none
+                  hover:bg-blue-50
+                  px-6 py-3
+                  text-gray-800
+                "
               >
-                {csvUploading ? 'Uploading...' : 'Upload products from CSV'}
+                <span className="text-sm font-medium">
+                  {csvUploading ? 'Uploading...' : 'Upload from CSV'}
+                </span>
               </Button>
 
               {csvUploading && (
-                <div className="space-y-2">
-                  <p className="text-sm">Uploading CSV file...</p>
-                  <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-xs text-muted-foreground">
+                <div className="p-4 space-y-2 bg-gray-50">
+                  <p className="text-sm text-gray-600">Uploading CSV file...</p>
+                  <Progress 
+                    value={uploadProgress} 
+                    className="h-2 bg-gray-200"
+                  />
+                  <p className="text-xs text-gray-500">
                     {uploadProgress}% completed
                   </p>
                 </div>

@@ -1,23 +1,34 @@
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle, NavigationMenuLink } from "@/components/ui/navigation-menu"
-import Link from "next/link"
+'use client'
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
+import { usePathname } from "next/navigation"
+
+const menuItemClass = (isActive: boolean) => `
+  px-4 py-2 rounded-md
+  text-md font-medium
+  transition-colors
+  hover:bg-gray-100
+  focus:bg-gray-100
+  focus:outline-none
+  ${isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-600'}
+  cursor-pointer
+  hover:shadow-inner
+`
 
 export default function Menu() {
+    const pathname = usePathname();
+    
     return (
-        <NavigationMenu>
-          <NavigationMenuList>
+        <NavigationMenu className="bg-white shadow-sm rounded-lg">
+          <NavigationMenuList className="flex space-x-1 p-1">
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink href="/" className={menuItemClass(pathname === '/')}>
                   Sales
                 </NavigationMenuLink>
-              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/products" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink href="/products" className={menuItemClass(pathname === '/products')}>
                   Products
                 </NavigationMenuLink>
-              </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
