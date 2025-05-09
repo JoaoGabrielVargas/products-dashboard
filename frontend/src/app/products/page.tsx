@@ -16,7 +16,6 @@ export default function Products() {
     try {
       setLoading(true)
       const { products } = await getSalesReport() as SalesReportResponse;
-      console.log("products", products)
       setProducts(products)
       setLoading(false)
     } catch (error) {

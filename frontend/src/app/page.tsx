@@ -36,7 +36,6 @@ export default function Home() {
     try {
       setLoading(true)
       const salesReportData = await getSalesReport(categoryId === 'all' ? undefined : categoryId) as SalesReportResponse
-      console.log("salesReportData 1", salesReportData)
       const monthlySales = groupSalesByMonth(salesReportData.sales)
       setSales(monthlySales)
       setMeta(salesReportData.meta)
@@ -132,7 +131,6 @@ export default function Home() {
   if (error) return <div className="flex items-center justify-center h-64 text-red-500">Error: {error}</div>
   // if (!sales.length) return <div className="flex items-center justify-center h-64">No sales data available</div>
 
-  console.log("sales", sales)
   return (
     <div className="p-4">
       <div className="p-4 flex justify-between">
