@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { Product, SalesReportResponse } from "@/interfaces/Interfaces"
 import ProductCard from "@/components/ProductCard"
 import { AddProductButton } from "@/components/AddProductButton"
+import { AddCategoryButton } from "@/components/AddCategoryButton"
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
@@ -77,7 +78,10 @@ export default function Products() {
     <div className="p-8">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold mb-4">Products</h1>
-        <AddProductButton onProductAdded={getProductsData}/>
+        <div className="flex gap-4">
+          <AddProductButton onProductAdded={getProductsData}/>
+          <AddCategoryButton onCategoryAdded={getProductsData} /> 
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

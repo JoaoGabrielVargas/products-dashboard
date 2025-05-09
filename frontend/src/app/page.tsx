@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { EditableCell } from "@/components/EditableCell";
+import { ExportDataDialog } from "@/components/ExportDataDialog";
 
 const chartConfig = {
   sales: {
@@ -129,7 +130,7 @@ export default function Home() {
 
   if (loading) return <div className="flex items-center justify-center h-64">Loading sales data...</div>
   if (error) return <div className="flex items-center justify-center h-64 text-red-500">Error: {error}</div>
-  if (!sales.length) return <div className="flex items-center justify-center h-64">No sales data available</div>
+  // if (!sales.length) return <div className="flex items-center justify-center h-64">No sales data available</div>
 
   console.log("sales", sales)
   return (
@@ -170,6 +171,7 @@ export default function Home() {
             ))}
           </SelectContent>
         </Select>
+        <ExportDataDialog />
         </div>
         </div>
       <div className="grid grid-cols-3 gap-6 mb-14">
