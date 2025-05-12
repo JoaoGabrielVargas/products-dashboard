@@ -6,7 +6,6 @@
    ```
    Python 3.8+
    Node.js 16+
-   PostgreSQL/SQLite
 
 2. **Backend Setup**:
    ```bash
