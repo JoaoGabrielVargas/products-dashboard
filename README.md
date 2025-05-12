@@ -2,10 +2,10 @@
 
 ## Quick Start
 
-## Requirements:
-Python 3.8+
-Node.js 16+
-PostgreSQL/SQLite
+0. **Requirements**:
+   Python 3.8+
+   Node.js 16+
+   PostgreSQL/SQLite
 
 1. **Backend Setup**:
    ```bash
